@@ -1,6 +1,16 @@
+
 listofpackages<-
   c("RNeo4j","tidyverse","stringr","MASS","RColorBrewer","colorspace","shiny","RMySQL","ggplot2","RODBC",
-    "pool","dplyr","DBI","dplyr","reshape2","ROAuth"
+    "pool","dplyr","DBI","dplyr","reshape2","ROAuth","shiny",
+    "shinydashboard",
+    "ggplot2",
+    "plyr",
+    "plotly",
+    "DT",
+    "ggthemes",
+    "DataCombine",
+    "readxl",
+    "forecast"
   )
 
 # installing all the required packages
