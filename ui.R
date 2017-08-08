@@ -10,15 +10,15 @@ sidebar <- dashboardSidebar(
   width = 275,
   sidebarMenu(
     menuItem("Horse Racing Analysis", tabName = "dashbd", icon = icon("dashboard")),
-    uiOutput("choose_race"),uiOutput("choose_racemak"),
-    menuItem("Data", tabName = "datafile", icon = icon("th"),
+    uiOutput("choose_race"),uiOutput("choose_racemak"),uiOutput("choose_timestamp"),
+    menuItem("Over Round Graph", tabName = "datafile", icon = icon("th"),
              menuSubItem("Dataset for analysis", tabName = "datafile1", icon = icon("table")),
-             menuSubItem("Data from odds", tabName = "datf", icon = icon("table")),
-             menuSubItem("Other", tabName = "datafile2", icon = icon("table"))),
+             menuSubItem("OverRound Graph", tabName = "datf", icon = icon("bar-chart-o"))),
+            
     menuItem("Visualization", icon = icon("navicon"), tabName = "graphs", 
              menuSubItem("coming soon", tabName = "vsplot", icon = icon("pie-chart")),
              menuSubItem("coming soon", tabName = "vstext", icon = icon("pie-chart")),
-             menuItem("coming soon", tabName = "play", icon = icon("bar-chart-o"))
+             menuItem("coming soon", tabName = "play", icon = icon("pie-chart"))
     ),
     br(),
     br(),
@@ -86,11 +86,16 @@ body <- dashboardBody(
                 tabPanel("Event Table",
                          box(title = "Race Event Table",
                              width = 12, 
-                             DT::dataTableOutput('da.tab'))),
-                tabPanel("Book Maker", 
+                             DT::dataTableOutput('g.tab1'))),
+                tabPanel("BookMaker Values", 
                          box(title = "Bookie Table",
                              width = 12, 
-                             DT::dataTableOutput('da.tab1'))
+                             DT::dataTableOutput('g.tab1_1'))
+                         , width = "auto"),
+                tabPanel("OverRound", 
+                         box(title = "overRound Table",
+                             width = 12, 
+                             DT::dataTableOutput('g.tab1_2'))
                          , width = "auto")
               )
             )
@@ -101,9 +106,11 @@ body <- dashboardBody(
     
     tabItem(tabName = "datf",
             
-                         box(title = "Data from Odd table",
-                             width = 12, 
-                             DT::dataTableOutput('da.tab2')), width = "auto")
+            fluidPage(
+              plotlyOutput("overroundPlot")
+            )        
+            
+            )
     ,
     
     tabItem(tabName = "datafile2",

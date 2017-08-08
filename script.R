@@ -10,7 +10,9 @@ listofpackages<-
     "ggthemes",
     "DataCombine",
     "readxl",
-    "forecast"
+    "forecast",
+    "DT",
+    "plotly"
   )
 
 # installing all the required packages
