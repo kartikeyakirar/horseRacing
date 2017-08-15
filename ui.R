@@ -10,15 +10,22 @@ sidebar <- dashboardSidebar(
   width = 275,
   sidebarMenu(
     menuItem("Horse Racing Analysis", tabName = "dashbd", icon = icon("dashboard")),
-    uiOutput("choose_race"),uiOutput("choose_racemak"),uiOutput("choose_timestamp"),
+    uiOutput("choose_race"),uiOutput("choose_timestamp"),
     menuItem("Over Round Graph", tabName = "datafile", icon = icon("th"),
              menuSubItem("Dataset for analysis", tabName = "datafile1", icon = icon("table")),
              menuSubItem("OverRound Graph", tabName = "datf", icon = icon("bar-chart-o"))),
             
-    menuItem("Visualization", icon = icon("navicon"), tabName = "graphs", 
-             menuSubItem("coming soon", tabName = "vsplot", icon = icon("pie-chart")),
-             menuSubItem("coming soon", tabName = "vstext", icon = icon("pie-chart")),
-             menuItem("coming soon", tabName = "play", icon = icon("pie-chart"))
+    menuItem("Bookmaker Vs Market", icon = icon("navicon"), tabName = "graphs", 
+             menuSubItem("Dataset for analysis", tabName = "datafile2", icon = icon("table")),
+             menuSubItem("Bookmaker Comaprision", tabName = "datf1", icon = icon("bar-chart-o"))
+             
+    ),
+    menuItem("Bookmaker Plot", icon = icon("navicon"), tabName = "graphs", 
+             
+             menuSubItem("Bookmaker Plot against market", tabName = "datf3", icon = icon("bar-chart-o")),
+             menuSubItem("Bookmaker Plot Data", tabName = "datf4", icon = icon("bar-chart-o"))
+             
+             
     ),
     br(),
     br(),
@@ -107,52 +114,84 @@ body <- dashboardBody(
     tabItem(tabName = "datf",
             
             fluidPage(
-              plotlyOutput("overroundPlot")
+              plotlyOutput("overroundPlot", height = "900px")
             )        
             
-            )
+    )
+    ,
+    tabItem(tabName = "datf1",
+            
+            fluidPage(
+              plotlyOutput("overroundPlot1", height = "900px")
+            )        
+            
+    )
     ,
     
-    tabItem(tabName = "datafile2",
-            box(title = "Correlation table",
-                width = 12, 
-                DT::dataTableOutput('da.tab.cor'))  
+    tabItem(tabName = "datafile2",fluidRow(column(width=6,uiOutput("choose_racemak"))),
+            fluidRow(
+              mainPanel(
+                tabsetPanel(
+                  tabPanel("Event Table",
+                           box(title = "Race Event Table",
+                               width = 12, 
+                               DT::dataTableOutput('g.tab2'))),
+                  tabPanel("BookMaker Values", 
+                           box(title = "Bookie Table",
+                               width = 12, 
+                               DT::dataTableOutput('g.tab2_1'))
+                           , width = "auto"),
+                  tabPanel("OverRound", 
+                           box(title = "overRound Table",
+                               width = 12, 
+                               DT::dataTableOutput('g.tab2_2'))
+                           , width = "auto")
+                )
+              ))
+            
+            
     ),
     
-    tabItem(tabName = "vstext",
-            mainPanel(
-              tabsetPanel(
-                tabPanel("Graphical",
-                         plotlyOutput("vsplot2"), width = "auto"),
-                tabPanel("Summary", 
-                         verbatimTextOutput("vstext1", placeholder = TRUE)
-                         , width = "auto")
+    tabItem(tabName = "datf3",
+            fluidRow(
+              
+              
+              box(
+                title = "Select Event", status = "primary",solidHeader = TRUE,width = 4,height = 115,
+                collapsible = TRUE,
+                uiOutput("ch1")
+                #  selectInput("ver", "", choices = as.list(c("All",levels(locationHPHC$Vertical))), width = 200,selected = "All")
+              ),
+              box(
+                title = "Select Multiple Bookmaker",status = "primary",solidHeader = TRUE,width = 4,height = 115,
+                collapsible = TRUE,
+                uiOutput("ch2")
+                #  selectInput("ver1", "", choices = as.list(c("All",levels(locationHPHC$Account))),selected = "All")
+              ),
+              box(
+                title = "Select Horse",status = "primary",solidHeader = TRUE,width = 4,height = 115,
+                collapsible = TRUE,
+                uiOutput("ch3")
+                # selectInput("ver2", "", choices = as.list(c("All",levels(locationHPHC$Site))),selected = "All")
+                
               )
-            )),
-    tabItem(tabName = "vsplot",
-            fluidPage(
-              plotlyOutput("vsplot1")
-            )),
+              
+              
+            ),
+            fluidRow( (
+              plotlyOutput("overroundPlot2", height = "900px")
+            ))
+            
+    ),
     
-    
-    
-    
-    tabItem(tabName = "play",
-            mainPanel(
-              tabsetPanel(
-                tabPanel("Mannual Weights",
-                         uiOutput("widget1"),
-                         uiOutput("widget2"),
-                         br(),
-                         tags$head(tags$style(HTML(".small-box {length: 1000px}"))),
-                         valueBoxOutput("vbox3", width = 12)),
-                tabPanel("percentage Compliment", 
-                         fluidRow( column(6,uiOutput("widget3")),
-                                   column(5,valueBoxOutput("vbox_1", width = 28))),
-                         fluidRow( 
-                           plotlyOutput("vsplot_1")
-                           
-                         )))))
+    tabItem(tabName = "datf4",
+            tabsetPanel(
+              tabPanel("Event Table",
+                       box(title = "Race Event Table",
+                           width = 12, 
+                           DT::dataTableOutput('g'))))
+            
+    )
     
     )
     
