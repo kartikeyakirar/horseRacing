@@ -154,22 +154,14 @@ body <- dashboardBody(
     
     tabItem(tabName = "datf3",
             fluidRow(
-              
-              
               box(
-                title = "Select Event", status = "primary",solidHeader = TRUE,width = 4,height = 115,
-                collapsible = TRUE,
-                uiOutput("ch1")
-                #  selectInput("ver", "", choices = as.list(c("All",levels(locationHPHC$Vertical))), width = 200,selected = "All")
-              ),
-              box(
-                title = "Select Multiple Bookmaker",status = "primary",solidHeader = TRUE,width = 4,height = 115,
+                title = "Select Multiple Bookmaker",status = "primary",solidHeader = TRUE,width = 6,height = 115,
                 collapsible = TRUE,
                 uiOutput("ch2")
                 #  selectInput("ver1", "", choices = as.list(c("All",levels(locationHPHC$Account))),selected = "All")
               ),
               box(
-                title = "Select Horse",status = "primary",solidHeader = TRUE,width = 4,height = 115,
+                title = "Select Horse",status = "primary",solidHeader = TRUE,width =6,height = 115,
                 collapsible = TRUE,
                 uiOutput("ch3")
                 # selectInput("ver2", "", choices = as.list(c("All",levels(locationHPHC$Site))),selected = "All")

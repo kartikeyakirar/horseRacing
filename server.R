@@ -51,7 +51,8 @@ server <- function(input, output) {
     qwe[qwe$bet==it[i],]<-zoo::na.locf(zoo::na.locf(qwe[qwe$bet==it[i],]),fromLast=T)
   }
   
-  qwe$lowest_value<-apply(qwe[,-c(1,2)],1,FUN = function(x) {x<-as.numeric(x);x<-x[x>0];min(x)})
+  qwe$lowest_value<-apply(qwe[,-c(1,2)],1,FUN = function(x) {x<-as.numeric(x);x<-x[x>0 & !is.na(x)];min(x)})
+  qwe$lowest_value[qwe$lowest_value==Inf]<-0
   qwe
   })
   
@@ -60,8 +61,8 @@ server <- function(input, output) {
   qwe1<-reshape2::recast(qwe, Timestamp~bet,measure.var = "lowest_value", id.var = c("Timestamp","bet","lowest_value"))
     qwe1<-zoo::na.locf(zoo::na.locf(qwe1),fromLast=T)
  
-  qwe1$overround<-apply(qwe1[,-1],1,FUN = function(x) {sum(as.numeric(x))})
-  qwe1<-qwe1[qwe1$overround>0,]
+  qwe1$overround<-apply(qwe1[,-1],1,FUN = function(x) {x<-as.numeric(x);x<-x[!is.na(x)];sum(as.numeric(x))})
+  
   
   qwe1
   })
@@ -152,16 +153,23 @@ server <- function(input, output) {
     qw<-dat.tab2() 
     options("scipen"=100, "digits"=4)
     qw<-rbind(qw[qw$idbookmaker!=31,],qw[qw$idbookmaker==31 & qw$odds_type=="L" & qw$odds_ctr== 0,])
-    timeS<-data.frame(dat.tab1_1()$Timestamp)
-    colnames(timeS)<-"Timestamp"
+    timeS1<-data.frame(qw$Timestamp)
+   colnames(timeS1)<-"Timestamp"
+   
+   
+   
+   
+   
+   
+   
     it<-unique(qw$idbookmaker)
     tpp<-list() 
     for(i in it){
       qww<-qw[qw$idbookmaker == i,]
       qwe<-reshape2::recast(qww, Timestamp~bet,measure.var = "odds", id.var = c("Timestamp","bet","odds"))
-      qwe<-merge(qwe,timeS,all=T)
+      qwe<-merge(qwe,timeS1,all=T)
       qwe<-zoo::na.locf(zoo::na.locf(qwe),fromLast=T)
-      q<-apply(qwe[,-1],1,FUN = function(x) {x<-x[as.numeric(x)>0];sum(as.numeric(x))})
+      q<-apply(qwe[,-1],1,FUN = function(x) {x<-as.numeric(x);x<-x[x>0 & !is.na(x)];sum(x)})
       tp<-data.frame(qwe$Timestamp,unlist(q),stringsAsFactors = F)
       colnames(tp)<-c("Timestamp",i)
       if(length(tpp)==0){
@@ -274,76 +282,14 @@ server <- function(input, output) {
   
   
   
-  da.tab.rec2<-reactive({
-    (dbGetQuery(my_db, paste0("SELECT  A.*
-                              FROM  odds A 
-                              INNER JOIN event AS B 
-                              ON A.idevent = B.idevent 
-                              INNER JOIN bookmaker AS C 
-                              ON A.idbookmaker =C.idbookmaker 
-                              WHERE
-                              B.EventName = '",input$chrace,"' AND C.name ='",input$chbookmak,"';")))
-  })
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  da.tab.rec3<-reactive({
-    (dbGetQuery(my_db, paste0("SELECT  A.*
-                              FROM  odds A 
-                              INNER JOIN event AS B 
-                              ON A.idevent = B.idevent 
-                              WHERE
-                              B.EventName = '",input$chrace,"' AND B.Event_DateTime ='",input$chtimestamp,"';")))
-  })
-  
-  
-  
-  
-  
-  output$ch1 <- renderUI({
-    selectInput("ch1", "", as.list((race_name)))
-  })
-  # 
-  da.tab.ch1<-reactive({
-    (dbGetQuery(my_db, paste0("SELECT  A.*
-                              FROM  odds A 
-                              INNER JOIN event AS B 
-                              ON A.idevent = B.idevent 
-                              WHERE
-                              B.EventName = '",input$ch1,"';")))
-  })
-  # Horse Racing - Bath
-  # 2017-05-26 11:10:00
   
   
   output$ch2 <- renderUI({
-    selectInput("ch2", "", as.list((unique(da.tab.ch1()$idbookmaker))),multiple = T)
+    selectInput("ch2", "", as.list((unique(dat.tab1()$idbookmaker))),multiple = T)
   })
   
   da.tab.ch2<-reactive({
-    tmp<-da.tab.ch1()
+    tmp<-dat.tab1()
     tmp<-tmp[tmp$idbookmaker %in% input$ch2,]
     tmp
     })
@@ -410,8 +356,14 @@ server <- function(input, output) {
     
     
     d <- melt(tmp_new, id.vars="Timestamp")
+    d$value<-as.numeric(d$value)
+    d$value[(d$value)<0]<-0
+    
     p1 <- ggplot(d,aes(Timestamp,value, col=variable)) + 
-      geom_line() + geom_point()
+      geom_line()+
+      ylab('Odds') + xlab('Timestamp')+
+      ggtitle("Bookmaker comparision ")+ 
+      ggthemes::theme_gdocs() + scale_colour_gdocs()
     
     ggplotly(p1)
   })
